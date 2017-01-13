@@ -514,7 +514,7 @@ public class Map {
 
 		int end_dir = Random.Range (0, 4);
 		int decoy_dir = Random.Range (0, 3);
-		if (end_dir == decoy_dir) {
+		if (decoy_dir >= end_dir) {
 			decoy_dir++;
 		}
 
