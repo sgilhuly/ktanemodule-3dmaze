@@ -8,7 +8,7 @@ public class VerifierController : MonoBehaviour {
 
 	void Start () {
 	
-		Map map = new Map (0, 0, Index);
+		Map map = new Map (0, 0, Index, 0);
 
 		GameObject cell;
 
