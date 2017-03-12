@@ -80,28 +80,38 @@ public class ThreeDMazeModule : MonoBehaviour
             }
         }
 
+        var rowMsg = firstDigit.ToString();
         int numUnlit = 0;
         foreach (string s in BombInfo.GetOffIndicators())
         {
+            // MAZE GAMER
             if (isCommonLetter(s, "aegmrz"))
-            { // MAZE GAMER
+            {
                 numUnlit++;
+                rowMsg += " + " + s;
             }
         }
+        if (numUnlit == 0)
+            rowMsg = "no indicators";
 
+        var colMsg = lastDigit.ToString();
         int numLit = 0;
         foreach (string s in BombInfo.GetOnIndicators())
         {
+            // HELP I'M LOST
             if (isCommonLetter(s, "ehilmopst"))
-            { // HELP I'M LOST
+            {
                 numLit++;
+                colMsg += " + " + s;
             }
         }
+        if (numLit == 0)
+            colMsg = "no indicators";
 
         int row = (firstDigit + numUnlit) % 8;
         int col = (lastDigit + numLit) % 8;
 
-        map = new Map(col, row, moduleId);
+        map = new Map(col, row, colMsg, rowMsg, moduleId);
         UpdateDisplay(map.getDefaultMapView());
     }
 
