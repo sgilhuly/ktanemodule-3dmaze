@@ -180,7 +180,7 @@ public class Map
                     return mapData[xx % WIDTH, yy % WIDTH].n_wall ? (isSolution ? '■' : '═') : ' ';
                 }
                 else
-                    return (x - 2) % 4 == 2 && (y - 1) % 2 == 1 ? mapData[xx, yy].label : xx == pl_x && yy == pl_y ? "▲▸▼◂"[pl_dir] : ' ';
+                    return (x - 2) % 4 == 2 && (y - 1) % 2 == 1 ? mapData[xx, yy].label : xx == pl_x && yy == pl_y ? "▲►▼◄"[pl_dir] : ' ';
             }))));
     }
 
@@ -245,7 +245,7 @@ public class Map
         return mapData[bound(x, WIDTH), bound(y, WIDTH)].label;
     }
 
-    public Map(int end_x, int end_y, int mapIndex, int moduleId)
+    public Map(int end_x, int end_y, string colMsg, string rowMsg, int mapIndex, int moduleId)
     {
         sol_x = end_x;
         sol_y = end_y;
@@ -605,7 +605,7 @@ public class Map
         }
 
         Debug.LogFormat("[3D Maze #{0}] Selected map: {1}", moduleId, join("", labels.SelectMany(s => s).Where("ABCDH".Contains).Distinct().OrderBy(c => c)));
-        Debug.LogFormat("[3D Maze #{0}] Column: {1}, Row: {2}, Cardinal: {3}", moduleId, end_x, end_y, new[] { "north", "east", "south", "west" }[end_dir]);
+        Debug.LogFormat("[3D Maze #{0}] Column: {1} ({2}), Row: {3} ({4}), Cardinal: {5}", moduleId, end_x, colMsg, end_y, rowMsg, new[] { "North", "East", "South", "West" }[end_dir]);
 
         for (int y = 0; y < WIDTH; y++)
         {
@@ -672,7 +672,7 @@ public class Map
         win_y2 = bound(end_y + yMod(1, 0, end_dir), WIDTH);
     }
 
-    public Map(int end_x, int end_y, int moduleId) : this(end_x, end_y, Random.Range(0, 10), moduleId)
+    public Map(int end_x, int end_y, string colMsg, string rowMsg, int moduleId) : this(end_x, end_y, colMsg, rowMsg, Random.Range(0, 10), moduleId)
     {
     }
 
