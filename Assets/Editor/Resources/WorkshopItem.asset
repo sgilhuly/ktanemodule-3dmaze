@@ -13,30 +13,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   WorkshopPublishedFileID: 752338147
   Title: 3D Maze
-  Description: '[i]You are in a maze of twisty passages, all alike. Exits are to the
-    north, south, east, and west.[/i]
-
-
-    [h1]About[/h1]
-
-    This is a complicated orienteering challenge. The expert must locate the defuser
-    inside a maze and guide them to the exit, while communicating about landmarks
-    from a 3D-perspective in the maze.
-
-
-    [h1]Manual[/h1]
-
-    A PDF of the manual is included in the download, you can also download here:
-
-    https://dl.dropboxusercontent.com/u/59698974/Modules/3DMazeManual.pdf
-
-
-    [h1]Module ID[/h1]
-
-    spwiz3DMaze
-
-
-    Thanks to Timwi for help with the manual formatting.'
+  Description: "[i]You are in a maze of twisty passages, all alike. Exits are to the
+    north, south, east, and west.[/i]\n\n[h1]About[/h1]\nThis is a complicated orienteering
+    challenge. The expert must locate the defuser inside a maze and guide them to
+    the exit, while communicating about landmarks from a 3D-perspective in the maze.\n\n[h1]Manual[/h1]\nA
+    PDF of the manual is included in the download, you can also download here:\n[url=http://ktane.timwi.de/PDF/3D%20Maze.pdf]Manual
+    PDF[/url]\r\n[url=http://ktane.timwi.de/HTML/3D%20Maze.html]Manual HTML[/url]\n\n[h1]Module
+    ID[/h1]\nspwiz3DMaze\n\nThanks to Timwi for help with the manual formatting."
   PreviewImage: {fileID: 2800000, guid: 14ce9e975769a5a41b0d508614e823bc, type: 3}
   Tags:
   - Regular Module
