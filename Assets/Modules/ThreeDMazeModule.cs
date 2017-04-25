@@ -48,6 +48,10 @@ public class ThreeDMazeModule : MonoBehaviour
 
     protected void Start()
     {
+        // In Unity, we assigned all 8 possible letter materials to the MR_letter game object because otherwise they do not show up on Mac.
+        // Here we reduce the number of materials back to one.
+        MR_letter.materials = new[] { MatA };
+
         moduleId = moduleIdCounter++;
 
         UpdateDisplay(new MapView());
