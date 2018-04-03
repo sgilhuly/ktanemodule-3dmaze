@@ -1,5 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 public class ThreeDMazeModule : MonoBehaviour
 {
@@ -41,6 +44,7 @@ public class ThreeDMazeModule : MonoBehaviour
 
     private bool isActive = false;
     private bool isComplete = false;
+    private bool isForceSolved = false;
     private int moduleId;
     private static int moduleIdCounter = 1;
 
@@ -243,5 +247,94 @@ public class ThreeDMazeModule : MonoBehaviour
         uvs[2] = new Vector2(1.0f, 0.0f);
         uvs[3] = new Vector2(0.0f, 1.0f);
         mf.mesh.uv = uvs;
+    }
+
+    private KMSelectable[] ShortenDirection(string direction)
+    {
+        switch (direction)
+        {
+            case "l":
+            case "left":
+                return new[] { ButtonLeft };
+            case "r":
+            case "right":
+                return new[] { ButtonRight };
+            case "f":
+            case "forward":
+                return new[] { ButtonStraight };
+            case "u":
+            case "u-turn":
+            case "uturn":
+            case "turnaround":
+            case "turn-around":
+                return new[] { ButtonRight, ButtonRight };
+            default:
+                return new KMSelectable[] { null };
+        }
+    }
+
+    private void TwitchHandleForcedSolve()
+    {
+        isForceSolved = true;
+        KMAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, this.transform);
+        GetComponent<KMSelectable>().AddInteractionPunch(0.1f);
+        BombModule.HandlePass();
+        UpdateDisplay(new MapView());
+        isComplete = true;
+        Debug.LogFormat("[3D Maze #{0}] Module forcibly solved.", moduleId);
+    }
+
+    private string TwitchHelpMessage = "Make a series of moves using !{0} move f f r f l f u. Walk a littler slower using !{0} walk r f u f f.  (Movements are l = Left, r = Right, f = Forward, and u = U-Turn.)";
+
+    private IEnumerator ProcessTwitchCommand(string inputCommand)
+    {
+        List<string> commands = inputCommand.ToLowerInvariant().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+        if (commands.Count == 0) yield break;
+
+        bool moving = false;
+
+        if (ShortenDirection(commands[0])[0] == null)
+        {
+            switch (commands[0])
+            {
+                case "move":
+                case "m":
+                    moving = true;
+                    goto case "walk";
+                case "walk":
+                case "w":
+                    commands.RemoveAt(0);
+                    break;
+                default:
+                    yield return "sendtochaterror valid commands are m = \'Move\' or w = \'Walk\'. Valid movements are l = \'Left\', r = \'Right\', f = \'Forward\', or u = \'U-turn\'.";
+                    yield break;
+            }
+        }
+
+        List<KMSelectable> moves = commands.SelectMany(ShortenDirection).ToList();
+        if (!moves.Any())
+        {
+            yield return "sendtochaterror Please tell me a set of moves to walk me into the correct wall.";
+            yield break;
+        }
+        if (moves.Any(m => m == null))
+        {
+            string invalidMove = commands.FirstOrDefault(x => ShortenDirection(x)[0] == null);
+            if (!string.IsNullOrEmpty(invalidMove))
+                yield return string.Format("sendtochaterror I don't know how to move in the direction of {0}.", invalidMove);
+            yield break;
+        }
+        yield return null;
+
+        if (moves.Count > (moving ? 64 : 16)) yield return "elevator music";
+
+        float moveDelay = moving ? 0.1f : 0.4f;
+        foreach (KMSelectable move in moves)
+        {
+            move.OnInteract();
+            yield return "trycancel";
+            yield return new WaitForSeconds(moveDelay);
+        }
     }
 }
