@@ -1,18 +1,20 @@
 ﻿using System;
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using KModkit;
+using ThreeDMaze;
+using UnityEngine;
 
 public class ThreeDMazeModule : MonoBehaviour
 {
-
     public KMBombInfo BombInfo;
     public KMBombModule BombModule;
     public KMAudio KMAudio;
     public KMSelectable ButtonLeft;
     public KMSelectable ButtonRight;
     public KMSelectable ButtonStraight;
+    public KMRuleSeedable RuleSeedable;
 
     public MeshRenderer MR_ble;
     public MeshRenderer MR_blw;
@@ -38,13 +40,12 @@ public class ThreeDMazeModule : MonoBehaviour
     public Material MatS;
     public Material MatW;
 
-    private int CodeLeft = 0;
-    private int CodeRight = 1;
-    private int CodeStraight = 2;
+    private const int CodeLeft = 0;
+    private const int CodeRight = 1;
+    private const int CodeStraight = 2;
 
     private bool isActive = false;
-    private bool isComplete = false;
-    private bool isForceSolved = false;
+    private bool isComplete = false;    // for Souvenir
     private int moduleId;
     private static int moduleIdCounter = 1;
 
@@ -70,75 +71,11 @@ public class ThreeDMazeModule : MonoBehaviour
     protected void OnActivate()
     {
         isActive = true;
-
-        string serialNum = BombInfo.GetSerialNumber();
-        bool foundDigit = false;
-        int firstDigit = 0;
-        int lastDigit = 0;
-        foreach (char c in serialNum)
-        {
-            if (c >= '0' && c <= '9')
-            {
-                if (!foundDigit)
-                {
-                    foundDigit = true;
-                    firstDigit = c - '0';
-                }
-                lastDigit = c - '0';
-            }
-        }
-
-        var rowMsg = firstDigit.ToString();
-        int numUnlit = 0;
-        foreach (string s in BombInfo.GetOffIndicators())
-        {
-            // MAZE GAMER
-            if (isCommonLetter(s, "aegmrz"))
-            {
-                numUnlit++;
-                rowMsg += " + " + s;
-            }
-        }
-        if (numUnlit == 0)
-            rowMsg = "no indicators";
-
-        var colMsg = lastDigit.ToString();
-        int numLit = 0;
-        foreach (string s in BombInfo.GetOnIndicators())
-        {
-            // HELP I'M LOST
-            if (isCommonLetter(s, "ehilmopst"))
-            {
-                numLit++;
-                colMsg += " + " + s;
-            }
-        }
-        if (numLit == 0)
-            colMsg = "no indicators";
-
-        int row = (firstDigit + numUnlit) % 8;
-        int col = (lastDigit + numLit) % 8;
-
-        map = new Map(col, row, colMsg, rowMsg, moduleId);
+        map = new Map(BombInfo.GetSerialNumber(), BombInfo.GetOnIndicators().ToArray(), BombInfo.GetOffIndicators().ToArray(), moduleId, RuleSeedable.GetRNG());
         UpdateDisplay(map.getDefaultMapView());
     }
 
-    protected bool isCommonLetter(string a, string b)
-    {
-        b = b.ToLower();
-
-        foreach (char c in a.ToLower())
-        {
-            if (c >= 'a' && c <= 'z' && b.Contains(c + ""))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    protected bool HandlePress(int button)
+    private bool HandlePress(int button)
     {
         KMAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, this.transform);
         GetComponent<KMSelectable>().AddInteractionPunch(0.1f);
@@ -187,7 +124,7 @@ public class ThreeDMazeModule : MonoBehaviour
         return false;
     }
 
-    protected void UpdateDisplay(MapView view)
+    private void UpdateDisplay(MapView view)
     {
         MR_ble.enabled = view.ble;
         MR_blw.enabled = view.blw;
@@ -275,7 +212,6 @@ public class ThreeDMazeModule : MonoBehaviour
 
     private void TwitchHandleForcedSolve()
     {
-        isForceSolved = true;
         KMAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, this.transform);
         GetComponent<KMSelectable>().AddInteractionPunch(0.1f);
         BombModule.HandlePass();
@@ -284,7 +220,9 @@ public class ThreeDMazeModule : MonoBehaviour
         Debug.LogFormat("[3D Maze #{0}] Module forcibly solved.", moduleId);
     }
 
+#pragma warning disable 414 // Silence the compiler warning about an unused field (it’s used by TP via Reflection)
     private string TwitchHelpMessage = "Make a series of moves using !{0} move f f r f l f u. Walk a littler slower using !{0} walk r f u f f.  (Movements are l = Left, r = Right, f = Forward, and u = U-Turn.)";
+#pragma warning restore 414
 
     private IEnumerator ProcessTwitchCommand(string inputCommand)
     {
