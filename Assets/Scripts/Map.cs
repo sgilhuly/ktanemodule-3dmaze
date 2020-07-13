@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using UnityEngine;
 
@@ -20,7 +19,7 @@ namespace ThreeDMaze
         public const int RESULT_SUCCESS = 1;
         public const int RESULT_FAILURE = 2;
 
-        private MapNode[,] finalMapData;
+        private MapNode[,] mapData;
 
         private int win_x1;
         private int win_x2;
@@ -32,6 +31,7 @@ namespace ThreeDMaze
         private int pl_x;
         private int pl_y;
         private int pl_dir;
+        private int end_dir;
 
         public void turnLeft()
         {
@@ -148,10 +148,10 @@ namespace ThreeDMaze
                         return (x - 2) % 4 == 2 && xx == sol_x ? '↓' : ' ';
                     else if (xWall && yWall)
                     {
-                        var upWall = finalMapData[xx % WIDTH, (yy + WIDTH - 1) % WIDTH].w_wall;
-                        var downWall = finalMapData[xx % WIDTH, yy % WIDTH].w_wall;
-                        var leftWall = finalMapData[(xx + WIDTH - 1) % WIDTH, yy % WIDTH].n_wall;
-                        var rightWall = finalMapData[xx % WIDTH, yy % WIDTH].n_wall;
+                        var upWall = mapData[xx % WIDTH, (yy + WIDTH - 1) % WIDTH].w_wall;
+                        var downWall = mapData[xx % WIDTH, yy % WIDTH].w_wall;
+                        var leftWall = mapData[(xx + WIDTH - 1) % WIDTH, yy % WIDTH].n_wall;
+                        var rightWall = mapData[xx % WIDTH, yy % WIDTH].n_wall;
                         return " ╨╥║╡╝╗╣╞╚╔╠═╩╦╬"[(upWall ? 1 : 0) + (downWall ? 2 : 0) + (leftWall ? 4 : 0) + (rightWall ? 8 : 0)];
                     }
                     else if (xWall)
@@ -159,17 +159,17 @@ namespace ThreeDMaze
                         var isSolution = yy % WIDTH == win_y1 && yy % WIDTH == win_y2 &&
                             ((xx % WIDTH == win_x1 && (xx + WIDTH - 1) % WIDTH == win_x2)
                             || (xx % WIDTH == win_x2 && (xx + WIDTH - 1) % WIDTH == win_x1));
-                        return finalMapData[xx % WIDTH, yy % WIDTH].w_wall ? (isSolution ? '█' : '║') : ' ';
+                        return mapData[xx % WIDTH, yy % WIDTH].w_wall ? (isSolution ? '█' : '║') : ' ';
                     }
                     else if (yWall)
                     {
                         var isSolution = xx % WIDTH == win_x1 && xx % WIDTH == win_x2 &&
                             ((yy % WIDTH == win_y1 && (yy + WIDTH - 1) % WIDTH == win_y2)
                             || (yy % WIDTH == win_y2 && (yy + WIDTH - 1) % WIDTH == win_y1));
-                        return finalMapData[xx % WIDTH, yy % WIDTH].n_wall ? (isSolution ? '■' : '═') : ' ';
+                        return mapData[xx % WIDTH, yy % WIDTH].n_wall ? (isSolution ? '■' : '═') : ' ';
                     }
                     else
-                        return (x - 2) % 4 == 2 && (y - 1) % 2 == 1 ? finalMapData[xx, yy].label : xx == pl_x && yy == pl_y ? "▲►▼◄"[pl_dir] : ' ';
+                        return (x - 2) % 4 == 2 && (y - 1) % 2 == 1 ? mapData[xx, yy].label : xx == pl_x && yy == pl_y ? "▲►▼◄"[pl_dir] : ' ';
                 }))));
         }
 
@@ -213,7 +213,7 @@ namespace ThreeDMaze
                     y++;
                 }
 
-                return finalMapData[bound(x, WIDTH), bound(y, WIDTH)].n_wall;
+                return mapData[bound(x, WIDTH), bound(y, WIDTH)].n_wall;
             }
 
             if (dir == EAST || dir == WEST)
@@ -223,7 +223,7 @@ namespace ThreeDMaze
                     x++;
                 }
 
-                return finalMapData[bound(x, WIDTH), bound(y, WIDTH)].w_wall;
+                return mapData[bound(x, WIDTH), bound(y, WIDTH)].w_wall;
             }
 
             return false;
@@ -231,7 +231,7 @@ namespace ThreeDMaze
 
         private char getLetter(int x, int y)
         {
-            return finalMapData[bound(x, WIDTH), bound(y, WIDTH)].label;
+            return mapData[bound(x, WIDTH), bound(y, WIDTH)].label;
         }
 
         public Map(string serialNumber, string[] litIndicators, string[] unlitIndicators, int moduleId, MonoRandom rnd)
@@ -248,7 +248,7 @@ namespace ThreeDMaze
 
                 for (var mapIndex = 0; mapIndex < 10; mapIndex++)
                 {
-                    var mapData = new MapNode[WIDTH, WIDTH];
+                    var rawMapData = new MapNode[WIDTH, WIDTH];
                     switch (mapIndex)
                     {
                         // ABC
@@ -594,8 +594,8 @@ namespace ThreeDMaze
 
                     for (int y = 0; y < WIDTH; y++)
                         for (int x = 0; x < WIDTH; x++)
-                            mapData[x, y] = new MapNode(labels[y][x], n_walls[y][x] == '1', w_walls[y][x] == '1');
-                    mazes.Add(mapData);
+                            rawMapData[x, y] = new MapNode(labels[y][x], n_walls[y][x] == '1', w_walls[y][x] == '1');
+                    mazes.Add(rawMapData);
                 }
 
                 rowPhrase = "MAZEGAMER";
@@ -768,32 +768,32 @@ namespace ThreeDMaze
             var end_x = (lastDigit + numLit) % WIDTH;
             var end_y = (firstDigit + numUnlit) % WIDTH;
 
-            finalMapData = mazes[Random.Range(0, 10)];
-            var end_dir = Random.Range(0, 4);
+            mapData = mazes[Random.Range(0, 10)];
+            end_dir = Random.Range(0, 4);
             var decoy_dir = Random.Range(0, 3);
             if (decoy_dir >= end_dir)
                 decoy_dir++;
 
-            Debug.LogFormat("[3D Maze #{0}] Selected map: {1}", moduleId, join("", Enumerable.Range(0, WIDTH * WIDTH).Select(ix => finalMapData[ix % WIDTH, ix / WIDTH].label).Where("ABCDH".Contains).Distinct().OrderBy(c => c)));
+            Debug.LogFormat("[3D Maze #{0}] Selected map: {1}", moduleId, join("", Enumerable.Range(0, WIDTH * WIDTH).Select(ix => mapData[ix % WIDTH, ix / WIDTH].label).Where("ABCDH".Contains).Distinct().OrderBy(c => c)));
             Debug.LogFormat("[3D Maze #{0}] Column: {1} ({2}), Row: {3} ({4}), Cardinal: {5}", moduleId, end_x, colMsg, end_y, rowMsg, new[] { "North", "East", "South", "West" }[end_dir]);
 
             // Replace the asterisks in the map with the true cardinal direction
             for (var x = 0; x < WIDTH; x++)
                 for (var y = 0; y < WIDTH; y++)
-                    if (finalMapData[x, y].label == '*')
-                        finalMapData[x, y].label = dirToChar(end_dir);
+                    if (mapData[x, y].label == '*')
+                        mapData[x, y].label = dirToChar(end_dir);
 
             // Add three decoy cardinal directions
             for (int i = 0; i < 3; i++)
             {
                 int x = Random.Range(0, WIDTH);
                 int y = Random.Range(0, WIDTH);
-                while (finalMapData[x, y].label != ' ')
+                while (mapData[x, y].label != ' ')
                 {
                     x = Random.Range(0, WIDTH);
                     y = Random.Range(0, WIDTH);
                 }
-                finalMapData[x, y].label = dirToChar(decoy_dir);
+                mapData[x, y].label = dirToChar(decoy_dir);
             }
 
             pl_x = Random.Range(0, WIDTH);
@@ -826,17 +826,17 @@ namespace ThreeDMaze
 
         public bool GetNorthWall(int x, int y)
         {
-            return finalMapData[x, y].n_wall;
+            return mapData[x, y].n_wall;
         }
 
         public bool GetWestWall(int x, int y)
         {
-            return finalMapData[x, y].w_wall;
+            return mapData[x, y].w_wall;
         }
 
         public char GetLabel(int x, int y)
         {
-            return finalMapData[x, y].label;
+            return mapData[x, y].label;
         }
 
         private char dirToChar(int dir)
