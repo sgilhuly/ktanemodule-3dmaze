@@ -765,8 +765,8 @@ namespace ThreeDMaze
             if (numLit == 0)
                 colMsg = "no lit indicators";
 
-            var end_x = (lastDigit + numLit) % WIDTH;
-            var end_y = (firstDigit + numUnlit) % WIDTH;
+            sol_x = (lastDigit + numLit) % WIDTH;
+            sol_y = (firstDigit + numUnlit) % WIDTH;
 
             mapData = mazes[Random.Range(0, 10)];
             end_dir = Random.Range(0, 4);
@@ -775,7 +775,7 @@ namespace ThreeDMaze
                 decoy_dir++;
 
             Debug.LogFormat("[3D Maze #{0}] Selected map: {1}", moduleId, join("", Enumerable.Range(0, WIDTH * WIDTH).Select(ix => mapData[ix % WIDTH, ix / WIDTH].label).Where("ABCDH".Contains).Distinct().OrderBy(c => c)));
-            Debug.LogFormat("[3D Maze #{0}] Column: {1} ({2}), Row: {3} ({4}), Cardinal: {5}", moduleId, end_x, colMsg, end_y, rowMsg, new[] { "North", "East", "South", "West" }[end_dir]);
+            Debug.LogFormat("[3D Maze #{0}] Column: {1} ({2}), Row: {3} ({4}), Cardinal: {5}", moduleId, sol_x, colMsg, sol_y, rowMsg, new[] { "North", "East", "South", "West" }[end_dir]);
 
             // Replace the asterisks in the map with the true cardinal direction
             for (var x = 0; x < WIDTH; x++)
@@ -800,17 +800,17 @@ namespace ThreeDMaze
             pl_y = Random.Range(0, WIDTH);
             pl_dir = Random.Range(0, 4);
 
-            while (!getEdge(end_x, end_y, end_dir, 0, 0, end_dir))
+            while (!getEdge(sol_x, sol_y, end_dir, 0, 0, end_dir))
             {
-                end_x = bound(end_x + xMod(1, 0, end_dir), WIDTH);
-                end_y = bound(end_y + yMod(1, 0, end_dir), WIDTH);
+                sol_x = bound(sol_x + xMod(1, 0, end_dir), WIDTH);
+                sol_y = bound(sol_y + yMod(1, 0, end_dir), WIDTH);
             }
 
-            win_x1 = end_x;
-            win_y1 = end_y;
+            win_x1 = sol_x;
+            win_y1 = sol_y;
 
-            win_x2 = bound(end_x + xMod(1, 0, end_dir), WIDTH);
-            win_y2 = bound(end_y + yMod(1, 0, end_dir), WIDTH);
+            win_x2 = bound(sol_x + xMod(1, 0, end_dir), WIDTH);
+            win_y2 = bound(sol_y + yMod(1, 0, end_dir), WIDTH);
         }
 
         private static Coordinate Neighbor(Coordinate cell, int direction)
