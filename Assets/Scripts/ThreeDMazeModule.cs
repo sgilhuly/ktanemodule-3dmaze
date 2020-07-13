@@ -221,7 +221,7 @@ public class ThreeDMazeModule : MonoBehaviour
     }
 
 #pragma warning disable 414 // Silence the compiler warning about an unused field (it’s used by TP via Reflection)
-    private string TwitchHelpMessage = "Make a series of moves using !{0} move f f r f l f u. Walk a littler slower using !{0} walk r f u f f.  (Movements are l = Left, r = Right, f = Forward, and u = U-Turn.)";
+    private string TwitchHelpMessage = "!{0} move L F R F U [move] | !4 walk L F R F U [walk slower] | [L = left, R = right, F = forward, U = u-turn]";
 #pragma warning restore 414
 
     private IEnumerator ProcessTwitchCommand(string inputCommand)

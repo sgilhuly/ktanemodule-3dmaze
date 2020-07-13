@@ -11,15 +11,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cf2299c8864afe4ab42466f546ae20d, type: 3}
   m_Name: WorkshopItem
   m_EditorClassIdentifier: 
-  WorkshopPublishedFileID: 752338147
+  WorkshopPublishedFileID: 2164996443
   Title: 3D Maze
-  Description: "[i]You are in a maze of twisty passages, all alike. Exits are to the
-    north, south, east, and west.[/i]\n\n[h1]About[/h1]\nThis is a complicated orienteering
-    challenge. The expert must locate the defuser inside a maze and guide them to
-    the exit, while communicating about landmarks from a 3D-perspective in the maze.\n\n[h1]Manual[/h1]\nA
-    PDF of the manual is included in the download, you can also download here:\n[url=http://ktane.timwi.de/PDF/3D%20Maze.pdf]Manual
-    PDF[/url]\r\n[url=http://ktane.timwi.de/HTML/3D%20Maze.html]Manual HTML[/url]\n\n[h1]Module
-    ID[/h1]\nspwiz3DMaze\n\nThanks to Timwi for help with the manual formatting."
-  PreviewImage: {fileID: 2800000, guid: 14ce9e975769a5a41b0d508614e823bc, type: 3}
   Tags:
   - Regular Module

@@ -11,15 +11,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 615501dbe4f3fe94fbf4b564abb10237, type: 3}
   m_Name: ModConfig
   m_EditorClassIdentifier: 
-  id: spwiz3DMaze
+  id: 3DMaze
   title: 3D Maze
-  description: "[i]You are in a maze of twisty passages, all alike. Exits are to the
-    north, south, east, and west.[/i]\n\n[h1]About[/h1]\nThis is a complicated orienteering
-    challenge. The expert must locate the defuser inside a maze and guide them to
-    the exit, while communicating about landmarks from a 3D-perspective in the maze.\n\n[h1]Manual[/h1]\nA
-    PDF of the manual is included in the download, you can also download here:\n[url=http://ktane.timwi.de/PDF/3D%20Maze.pdf]Manual
+  author: 
+  description: "[h1]This is a re-upload of a module created by Spare Wizard. Please
+    [url=https://steamcommunity.com/workshop/filedetails/?id=752338147]unsubscribe
+    from the old version[/url].[/h1]\n\n[i]You are in a maze of twisty passages, all
+    alike. Exits are to the north, south, east, and west.[/i]\n\n[h1]About[/h1]\nThis
+    is a complicated orienteering challenge. The expert must locate the defuser inside
+    a maze and guide them to the exit, while communicating about landmarks from a
+    3D-perspective in the maze.\n\n[h1]Manual[/h1]\n[url=http://ktane.timwi.de/PDF/3D%20Maze.pdf]Manual
     PDF[/url]\r\n[url=http://ktane.timwi.de/HTML/3D%20Maze.html]Manual HTML[/url]\n\n[h1]Module
-    ID[/h1]\nspwiz3DMaze\n\nThanks to Timwi for help with the manual formatting."
+    ID[/h1]\nspwiz3DMaze\n\nTP support, rule-seed support and Souvenir support added
+    by Timwi."
   version: 0.1.1
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 14ce9e975769a5a41b0d508614e823bc, type: 3}
