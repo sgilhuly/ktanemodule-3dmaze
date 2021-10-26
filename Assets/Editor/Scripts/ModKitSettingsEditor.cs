@@ -9,38 +9,55 @@ using UnityEngine;
 [CustomEditor(typeof(ModConfig))]
 public class ModKitSettingsEditor : Editor
 {
-    [MenuItem("Keep Talking ModKit/Configure Mod", priority = 1)]
+    [MenuItem("Keep Talking ModKit/Configure Mod _F5", priority = 1)]
     public static void ConfigureMod()
     {
         var modConfig = ModConfig.Instance;
         if (modConfig == null)
         {
-            modConfig = ScriptableObject.CreateInstance<ModConfig>();
-            string properPath = Path.Combine(Path.Combine(Application.dataPath, "Editor"), "Resources");
-            if (!Directory.Exists(properPath))
-            {
-                AssetDatabase.CreateFolder("Assets/Editor", "Resources");
-            }
-
-            string fullPath = Path.Combine(
-                Path.Combine("Assets", "Editor"),
-                Path.Combine("Resources", "ModConfig.asset")
-            );
-            AssetDatabase.CreateAsset(modConfig, fullPath);
-            ModConfig.Instance = modConfig;
+            CreateModConfig(out modConfig);
         }
         UnityEditor.Selection.activeObject = modConfig;
+    }
+
+    public static void CreateModConfig(out ModConfig modConfig)
+    {
+        modConfig = ScriptableObject.CreateInstance<ModConfig>();
+        string properPath = Path.Combine(Path.Combine(Application.dataPath, "Editor"), "Resources");
+        if (!Directory.Exists(properPath))
+        {
+            AssetDatabase.CreateFolder("Assets/Editor", "Resources");
+        }
+
+        string fullPath = Path.Combine(
+            Path.Combine("Assets", "Editor"),
+            Path.Combine("Resources", "ModConfig.asset")
+        );
+        AssetDatabase.CreateAsset(modConfig, fullPath);
+        ModConfig.Instance = modConfig;
     }
 
     public override void OnInspectorGUI()
     {
         //Basic Info
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("id"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("title"));
+
+        var idProperty = serializedObject.FindProperty("id");
+        EditorGUILayout.PropertyField(idProperty);
+        idProperty.stringValue = idProperty.stringValue.Trim();
+
+        var titleProperty = serializedObject.FindProperty("title");
+        EditorGUILayout.PropertyField(titleProperty);
+        titleProperty.stringValue = titleProperty.stringValue.Trim();
+
+        var authorProperty = serializedObject.FindProperty("author");
+        EditorGUILayout.PropertyField(authorProperty, new GUIContent("Author", "Only shown in local mods, mods from Steam will show Steam user as author"));
+        authorProperty.stringValue = authorProperty.stringValue.Trim();
+
         EditorGUILayout.PropertyField(serializedObject.FindProperty("description"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("version"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("outputFolder"));
+
         EditorGUILayout.EndVertical();
 
         //Preview Image
